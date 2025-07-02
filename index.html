@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tienda de compra y venta de vehículos de lujo</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0; padding: 0;
+      background: linear-gradient(to right, #1f4037, #99f2c8);
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    header {
+      background-color: #0d1b2a;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    header h1 { font-size: 2.5rem; }
+
+    nav {
+      background: #1e2a38;
+      color: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 10px;
+      flex-wrap: wrap;
+    }
+
+    nav input[type="text"],
+    nav select {
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      margin: 5px;
+      font-size: 1rem;
+    }
+
+    nav button {
+      cursor: pointer;
+      background-color: #2a9d8f;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 30px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+      margin-left: 10px;
+      margin-top: 5px;
+    }
+
+    nav button:hover {
+      background-color: #21867a;
+    }
+
+    #contador {
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #2a9d8f;
+      margin-left: 15px;
+    }
+
+    .contenedor-motos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .moto {
+      background: #fff;
+      border-radius: 15px;
+      margin: 20px;
+      padding: 15px;
+      width: 250px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .moto:hover { transform: scale(1.03); }
+
+    .moto img {
+      width: 100%;
+      border-radius: 10px;
+    }
+
+    .moto h3 {
+      font-size: 1.2rem;
+      color: #0d1b2a;
+      margin: 10px 0 5px;
+    }
+
+    .moto p {
+      font-weight: bold;
+      color: #2a9d8f;
+      margin: 0 0 10px;
+    }
+
+    .btn {
+      background-color: #2a9d8f;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover { background-color: #21867a; }
+
+    #carrito, #formulario, #compraAutosUsados {
+      background: white;
+      margin: 30px auto;
+      padding: 25px;
+      max-width: 500px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    #formulario input[type="text"],
+    #compraAutosUsados input[type="text"],
+    #compraAutosUsados input[type="number"],
+    #loginForm input[type="text"],
+    #loginForm input[type="password"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    #loginContainer {
+      background: white;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    #btnWhatsApp {
+      background-color: #25d366;
+      margin-top: 15px;
+    }
+
+    #usuarioLogueadoContainer {
+      background: white;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 15px 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    #compraAutosUsados {
+      display: none;
+    }
+
+    /* Panel admin */
+    #adminPanel {
+      background: #222;
+      color: #eee;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      display: none;
+    }
+    #adminPanel h2 {
+      margin-top: 0;
+      color: #2a9d8f;
+    }
+    #adminPanel section {
+      margin-bottom: 25px;
+      background: #333;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    #adminPanel ul {
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    #adminPanel li {
+      padding: 5px 0;
+      border-bottom: 1px solid #555;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #adminPanel button {
+      background-color: #e63946;
+      padding: 5px 10px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      margin-left: 10px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #adminPanel button:hover {
+      background-color: #c5303f;
+    }
+    #adminPanel input[type="text"],
+    #adminPanel input[type="number"] {
+      width: 70%;
+      padding: 8px;
+      margin-right: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode {
+      background: #121212;
+      color: #ccc;
+    }
+    body.dark-mode header {
+      background-color: #000;
+      color: #eee;
+    }
+    body.dark-mode nav {
+      background: #222;
+      color: #ccc;
+    }
+    body.dark-mode .moto {
+      background: #333;
+      color: #eee;
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+    }
+    body.dark-mode #carrito,
+    body.dark-mode #formulario,
+    body.dark-mode #compraAutosUsados,
+    body.dark-mode #loginContainer,
+    body.dark-mode #usuarioLogueadoContainer {
+      background: #222;
+      color: #eee;
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .contenedor-motos { flex-direction: column; align-items: center; }
+      nav input[type="text"], nav select { width: 90%; }
+      nav button {
+        margin-top: 8px;
+      }
+      #adminPanel {
+        max-width: 95%;
+      }
+    }
+  </style>
+</head>
+<body onload="inicializarApp()">
+  <audio id="audio" src="1.mp3" autoplay></audio>
+
+  <header>
+    <h1>🔥 VENTA Y COMPRA DE VEHICULOS</h1>
+    <p>¡Compra tu moto u carro favorito al mejor precio!</p>
+  </header>
+
+  <nav>
+    <input type="text" id="busqueda" placeholder="Buscar modelo..." onkeyup="filtrarMotos()" />
+    <select id="filtroPrecio" onchange="filtrarMotos()">
+      <option value="todos">Filtrar por precio</option>
+      <option value="0-300000">Menos de $300,000</option>
+      <option value="300000-500000">Entre $300,000 y $500,000</option>
+      <option value="500000-1000000">Más de $500,000</option>
+    </select>
+    <button class="btn" onclick="buscarPorVoz()">🎙️ Voz</button>
+    <button class="btn" onclick="toggleModo()">🌗 Modo</button>
+    <button class="btn" onclick="toggleCompraAutosUsados()">🚗 Vender Auto Usado</button>
+    <span id="contador">🛒 0</span>
+  </nav>
+
+  <section id="productos" class="contenedor-motos" data-aos="fade-up"></section>
+
+  <h2 style="text-align:center; color:#0d1b2a; margin-top: 40px;">🚗 Autos de Lujo</h2>
+  <section id="autos" class="contenedor-motos" data-aos="fade-up"></section>
+
+  <div id="carrito">
+    <h2>🛒 Carrito de Compras</h2>
+    <ul id="listaCarrito"></ul>
+    <p><strong>Total: $<span id="total">0</span> MXN</strong></p>
+    <input type="text" id="cupon" placeholder="Código de cupón (ej. DESCUENTO10)" />
+    <button class="btn" onclick="aplicarCupon()">Aplicar Cupón</button>
+    <button id="btnWhatsApp" class="btn" onclick="comprarPorWhatsApp()" disabled>Comprar por WhatsApp</button>
+    <button class="btn" onclick="descargarFactura()">Descargar Factura PDF</button>
+  </div>
+
+  <div id="formulario">
+    <h2>📦 Finalizar Compra</h2>
+    <form onsubmit="finalizarCompra(event)">
+      <label>Dirección de envío:</label><br />
+      <input type="text" id="direccion" required /><br />
+      <label>Ciudad (para calcular envío):</label><br />
+      <input type="text" id="ciudadEnvio" placeholder="Ciudad de entrega" /><br />
+      <button class="btn" type="submit">Comprar Ahora</button>
+    </form>
+    <button class="btn" onclick="calcularTiempoEntrega()">📦 Calcular Entrega</button>
+  </div>
+
+  <div id="compraAutosUsados">
+    <h2>🚗 Vende tu Auto Usado</h2>
+    <form id="formCompraAutoUsado" onsubmit="enviarAutoUsado(event)">
+      <input type="text" id="marcaAuto" placeholder="Marca" required />
+      <input type="text" id="modeloAuto" placeholder="Modelo" required />
+      <input type="number" id="anioAuto" placeholder="Año" min="1900" max="2025" required />
+      <input type="text" id="estadoAuto" placeholder="Estado (ej. Excelente, Bueno, Regular)" required />
+      <input type="number" id="precioEsperado" placeholder="Precio esperado (MXN)" min="0" required />
+      <input type="text" id="contactoAuto" placeholder="Tu teléfono o email" required />
+      <button class="btn" type="submit">Enviar información</button>
+    </form>
+  </div>
+
+  <div id="loginContainer" style="display:none;">
+    <h2>🔐 Iniciar Sesión</h2>
+    <form id="loginForm" onsubmit="login(event)">
+      <input type="text" id="usuario" placeholder="Usuario" required />
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+    <p>O <a href="#" onclick="registrarUsuario()">Registrarse</a></p>
+  </div>
+
+  <div id="usuarioLogueadoContainer" style="display:none; text-align:center; margin: 20px;">
+    <p>👤 Hola, <span id="nombreUsuario"></span></p>
+    <button class="btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+  </div>
+
+  <div style="text-align:center; margin: 50px;">
+    <h2>🎯 Juego: Encuentra el Ferrari</h2>
+    <p>Haz clic en el botón correcto para ganar un cupón de descuento.</p>
+    <button class="btn" onclick="jugarJuego(true)">Ferrari</button>
+    <button class="btn" onclick="jugarJuego(false)">Mazda</button>
+    <button class="btn" onclick="jugarJuego(false)">Kia</button>
+  </div>
+
+  <!-- Panel Admin -->
+  <div id="adminPanel">
+    <h2>🔧 Panel de Administración</h2>
+    
+    <section>
+      <h3>Usuarios registrados</h3>
+      <ul id="listaUsuariosAdmin"></ul>
+    </section>
+
+    <section>
+      <h3>Autos Usados enviados</h3>
+      <ul id="listaAutosUsadosAdmin"></ul>
+    </section>
+
+    <section>
+      <h3>Cupones de descuento</h3>
+      <ul id="listaCuponesAdmin"></ul>
+      <input type="text" id="nuevoCupon" placeholder="Código nuevo cupón" />
+      <input type="number" id="nuevoDescuento" placeholder="Descuento % (ej. 15)" min="1" max="100" />
+      <button class="btn" onclick="agregarCupon()">Agregar Cupón</button>
+    </section>
+    
+    <button class="btn" onclick="cerrarSesionAdmin()">Cerrar sesión Admin</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init();
+
+    const motos = [
+      { nombre: 'Yamaha MT-09 300', precio: 350000, imagen: 'motos/moto1.jpg' },
+      { nombre: 'BMW S1000RR', precio: 450000, imagen: 'motos/moto2.jpg' },
+      { nombre: 'Kawasaki Z1000', precio: 240000, imagen: 'motos/moto3.jpg' },
+      { nombre: 'Kawasaki Ninja H2R', precio: 700000, imagen: 'motos/moto4.jpg' },
+      { nombre: 'Honda CBR1000RR-R Fireblade', precio: 650000, imagen: 'motos/moto5.jpg' },
+      { nombre: 'Suzuki GSX-R1000R', precio: 450000, imagen: 'motos/moto6.jpg' },
+      { nombre: 'Ducati Panigale V4', precio: 580000, imagen: 'motos/moto7.jpg' },
+      { nombre: 'Aprilia RSV4 Factory', precio: 600000, imagen: 'motos/moto8.jpg' },
+      { nombre: 'KTM RC 8C', precio: 490000, imagen: 'motos/moto9.jpg' },
+      { nombre: 'MV Agusta F4 RR', precio: 750000, imagen: 'motos/moto10.jpg' },
+      { nombre: 'Triumph Daytona Moto2 765', precio: 390000, imagen: 'motos/moto11.jpg' },
+      { nombre: 'Yamaha YZF-R1M', precio: 610000, imagen: 'motos/moto12.jpg' },
+      { nombre: 'BMW M1000RR', precio: 720000, imagen: 'motos/moto13.jpg' },
+      { nombre: 'Ducati Streetfighter V4', precio: 560000, imagen: 'motos/moto14.jpg' },
+      { nombre: 'Kawasaki ZX-10RR', precio: 470000, imagen: 'motos/moto15.jpg' },
+      { nombre: 'Suzuki Hayabusa', precio: 450000, imagen: 'motos/moto16.jpg' },
+      { nombre: 'Honda CBR600RR', precio: 290000, imagen: 'motos/moto17.jpg' },
+      { nombre: 'Yamaha YZF-R7', precio: 260000, imagen: 'motos/moto18.jpg' },
+      { nombre: 'CFMOTO 300SR', precio: 140000, imagen: 'motos/moto19.jpg' },
+      { nombre: 'Benelli 302R', precio: 135000, imagen: 'motos/moto20.jpg' },
+      { nombre: 'KTM 390', precio: 150000, imagen: 'motos/moto21.jpg' },
+      { nombre: 'KTM 1290 super duke', precio: 350000, imagen: 'motos/moto22.jpg' }
+    ];
+
+    const autos = [
+      { nombre: 'Ferrari 488 GTB', precio: 5800000, imagen: 'autos/auto1.jpg' },
+      { nombre: 'Lamborghini Huracán', precio: 6500000, imagen: 'autos/auto2.jpg' },
+      { nombre: 'Porsche 911 Turbo S', precio: 4200000, imagen: 'autos/auto3.jpg' },
+      { nombre: 'Mercedes AMG GT', precio: 3600000, imagen: 'autos/auto4.jpg' }
+    ];
+
+    let carrito = [];
+    let total = 0;
+    let modoOscuro = false;
+    let descuentoAplicado = false;
+
+    // Admin y usuarios
+    const ADMIN_CREDENCIALES = { usuario: 'admin', password: 'admin123' };
+    let cupones = JSON.parse(localStorage.getItem('cupones')) || [
+      { codigo: 'DESCUENTO10', descuento: 10 },
+      { codigo: 'DESCUENTO20', descuento: 20 }
+    ];
+    let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+    let autosUsados = JSON.parse(localStorage.getItem('autosUsados')) || [];
+    let ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+
+    function inicializarApp() {
+      mostrarMotos();
+      mostrarAutos();
+      actualizarContador();
+      mostrarUsuariosLogueado();
+      actualizarListaCuponesAdmin();
+      actualizarListaUsuariosAdmin();
+      actualizarListaAutosUsadosAdmin();
+    }
+
+    function mostrarMotos() {
+      const contenedor = document.getElementById('productos');
+      contenedor.innerHTML = '';
+      motos.forEach(moto => {
+        const div = document.createElement('div');
+        div.className = 'moto';
+        div.innerHTML = `
+          <img src="${moto.imagen}" alt="${moto.nombre}" />
+          <h3>${moto.nombre}</h3>
+          <p>$${moto.precio.toLocaleString()}</p>
+          <button class="btn" onclick="agregarAlCarrito('${moto.nombre}', ${moto.precio})">Agregar</button>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    function mostrarAutos() {
+      const contenedor = document.getElementById('autos');
+      contenedor.innerHTML = '';
+      autos.forEach(auto => {
+        const div = document.createElement('div');
+        div.className = 'moto';
+        div.innerHTML = `
+          <img src="${auto.imagen}" alt="${auto.nombre}" />
+          <h3>${auto.nombre}</h3>
+          <p>$${auto.precio.toLocaleString()}</p>
+          <button class="btn" onclick="agregarAlCarrito('${auto.nombre}', ${auto.precio})">Agregar</button>
+        `;
+        contenedor.appendChild(div);
+      });
+    }
+
+    function agregarAlCarrito(nombre, precio) {
+      carrito.push({ nombre, precio });
+      actualizarContador();
+      actualizarListaCarrito();
+      actualizarTotal();
+      document.getElementById('btnWhatsApp').disabled = false;
+      descuentoAplicado = false;
+      Swal.fire({
+        icon: 'success',
+        title: 'Producto agregado',
+        text: `${nombre} se agregó al carrito.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
+
+    function actualizarContador() {
+      document.getElementById('contador').textContent = `🛒 ${carrito.length}`;
+    }
+
+    function actualizarListaCarrito() {
+      const lista = document.getElementById('listaCarrito');
+      lista.innerHTML = '';
+      carrito.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.nombre} - $${item.precio.toLocaleString()}`;
+        lista.appendChild(li);
+      });
+    }
+
+    function actualizarTotal() {
+      total = carrito.reduce((acc, item) => acc + item.precio, 0);
+      document.getElementById('total').textContent = total.toLocaleString();
+    }
+
+    function filtrarMotos() {
+      const textoBusqueda = document.getElementById('busqueda').value.toLowerCase();
+      const filtroPrecio = document.getElementById('filtroPrecio').value;
+
+      const filtrarArray = (arr) => arr.filter(item => {
+        const nombreLower = item.nombre.toLowerCase();
+        let precioOk = true;
+        if (filtroPrecio !== 'todos') {
+          const [min, max] = filtroPrecio.split('-').map(Number);
+          if (max) precioOk = item.precio >= min && item.precio <= max;
+          else precioOk = item.precio >= min;
+        }
+        return nombreLower.includes(textoBusqueda) && precioOk;
+      });
+
+      const motosFiltradas = filtrarArray(motos);
+      const autosFiltrados = filtrarArray(autos);
+
+      const contMotos = document.getElementById('productos');
+      const contAutos = document.getElementById('autos');
+
+      contMotos.innerHTML = '';
+      motosFiltradas.forEach(moto => {
+        const div = document.createElement('div');
+        div.className = 'moto';
+        div.innerHTML = `
+          <img src="${moto.imagen}" alt="${moto.nombre}" />
+          <h3>${moto.nombre}</h3>
+          <p>$${moto.precio.toLocaleString()}</p>
+          <button class="btn" onclick="agregarAlCarrito('${moto.nombre}', ${moto.precio})">Agregar</button>
+        `;
+        contMotos.appendChild(div);
+      });
+
+      contAutos.innerHTML = '';
+      autosFiltrados.forEach(auto => {
+        const div = document.createElement('div');
+        div.className = 'moto';
+        div.innerHTML = `
+          <img src="${auto.imagen}" alt="${auto.nombre}" />
+          <h3>${auto.nombre}</h3>
+          <p>$${auto.precio.toLocaleString()}</p>
+          <button class="btn" onclick="agregarAlCarrito('${auto.nombre}', ${auto.precio})">Agregar</button>
+        `;
+        contAutos.appendChild(div);
+      });
+    }
+
+    // Modo claro/oscuro
+    function toggleModo() {
+      modoOscuro = !modoOscuro;
+      document.body.classList.toggle('dark-mode', modoOscuro);
+    }
+
+    // Búsqueda por voz
+    function buscarPorVoz() {
+      if (!('webkitSpeechRecognition' in window)) {
+        Swal.fire('Error', 'Tu navegador no soporta búsqueda por voz', 'error');
+        return;
+      }
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = 'es-MX';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const texto = event.results[0][0].transcript;
+        document.getElementById('busqueda').value = texto;
+        filtrarMotos();
+      };
+
+      recognition.onerror = function() {
+        Swal.fire('Error', 'No se pudo reconocer la voz, intenta de nuevo', 'error');
+      };
+    }
+
+    // Comprar por WhatsApp
+    function comprarPorWhatsApp() {
+      if (carrito.length === 0) {
+        Swal.fire('Carrito vacío', 'Agrega productos antes de comprar', 'warning');
+        return;
+      }
+      const telefono = '5213312345678'; // Cambia por tu número real con código país
+      let mensaje = 'Hola, quiero comprar:\n';
+      carrito.forEach(item => {
+        mensaje += `- ${item.nombre}: $${item.precio.toLocaleString()} MXN\n`;
+      });
+      mensaje += `Total: $${total.toLocaleString()} MXN\n`;
+      mensaje = encodeURIComponent(mensaje);
+      window.open(`https://wa.me/${telefono}?text=${mensaje}`, '_blank');
+    }
+
+    // Aplicar cupón
+    function aplicarCupon() {
+      if (descuentoAplicado) {
+        Swal.fire('Cupón ya aplicado', 'No puedes aplicar más de un cupón por compra.', 'info');
+        return;
+      }
+      const codigo = document.getElementById('cupon').value.trim().toUpperCase();
+      const cuponEncontrado = cupones.find(c => c.codigo === codigo);
+      if (!cuponEncontrado) {
+        Swal.fire('Cupón inválido', 'Introduce un código de cupón válido.', 'error');
+        return;
+      }
+      const descuento = cuponEncontrado.descuento;
+      const descuentoCantidad = total * (descuento / 100);
+      total -= descuentoCantidad;
+      document.getElementById('total').textContent = total.toLocaleString();
+      descuentoAplicado = true;
+      Swal.fire('Cupón aplicado', `Descuento del ${descuento}% aplicado.`, 'success');
+    }
+
+    // Descargar factura en PDF
+    function descargarFactura() {
+      if (carrito.length === 0) {
+        Swal.fire('Carrito vacío', 'Agrega productos para generar la factura.', 'warning');
+        return;
+      }
+      let facturaHTML = `<h1>Factura de Compra</h1><ul>`;
+      carrito.forEach(item => {
+        facturaHTML += `<li>${item.nombre} - $${item.precio.toLocaleString()} MXN</li>`;
+      });
+      facturaHTML += `</ul><p><strong>Total: $${total.toLocaleString()} MXN</strong></p>`;
+      const elemento = document.createElement('div');
+      elemento.innerHTML = facturaHTML;
+
+      html2pdf().from(elemento).set({
+        margin: 1,
+        filename: 'Factura_Tienda_Vehiculos.pdf',
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      }).save();
+    }
+
+    // Finalizar compra
+    function finalizarCompra(e) {
+      e.preventDefault();
+      if (carrito.length === 0) {
+        Swal.fire('Carrito vacío', 'Agrega productos antes de comprar', 'warning');
+        return;
+      }
+      const direccion = document.getElementById('direccion').value.trim();
+      if (!direccion) {
+        Swal.fire('Falta dirección', 'Debes ingresar una dirección de envío', 'warning');
+        return;
+      }
+      // Guardar venta
+      const venta = {
+        productos: [...carrito],
+        total,
+        direccion,
+        fecha: new Date().toLocaleString()
+      };
+      ventas.push(venta);
+      localStorage.setItem('ventas', JSON.stringify(ventas));
+      Swal.fire('Compra realizada', 'Gracias por comprar con nosotros!', 'success');
+      carrito = [];
+      total = 0;
+      actualizarListaCarrito();
+      actualizarTotal();
+      actualizarContador();
+      document.getElementById('btnWhatsApp').disabled = true;
+      document.getElementById('direccion').value = '';
+      document.getElementById('ciudadEnvio').value = '';
+      document.getElementById('cupon').value = '';
+      descuentoAplicado = false;
+    }
+
+    // Calcular tiempo entrega según ciudad
+    function calcularTiempoEntrega() {
+      const ciudad = document.getElementById('ciudadEnvio').value.trim().toLowerCase();
+      if (!ciudad) {
+        Swal.fire('Falta ciudad', 'Introduce una ciudad para estimar tiempo de entrega.', 'info');
+        return;
+      }
+      let dias = 0;
+      if (ciudad.includes('cdmx') || ciudad.includes('mexico')) dias = 2;
+      else if (ciudad.includes('guadalajara') || ciudad.includes('jalisco')) dias = 3;
+      else if (ciudad.includes('monterrey') || ciudad.includes('nuevo león')) dias = 4;
+      else dias = 5; // resto de México
+
+      Swal.fire('Tiempo de entrega estimado', `Tu pedido llegará en aproximadamente ${dias} días hábiles.`, 'info');
+    }
+
+    // Mostrar formulario autos usados
+    function toggleCompraAutosUsados() {
+      const div = document.getElementById('compraAutosUsados');
+      div.style.display = div.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Enviar auto usado
+    function enviarAutoUsado(e) {
+      e.preventDefault();
+      const marca = document.getElementById('marcaAuto').value.trim();
+      const modelo = document.getElementById('modeloAuto').value.trim();
+      const anio = document.getElementById('anioAuto').value.trim();
+      const estado = document.getElementById('estadoAuto').value.trim();
+      const precio = document.getElementById('precioEsperado').value.trim();
+      const contacto = document.getElementById('contactoAuto').value.trim();
+
+      if (!marca || !modelo || !anio || !estado || !precio || !contacto) {
+        Swal.fire('Faltan datos', 'Completa todos los campos para enviar tu auto usado.', 'warning');
+        return;
+      }
+
+      autosUsados.push({ marca, modelo, anio, estado, precio, contacto });
+      localStorage.setItem('autosUsados', JSON.stringify(autosUsados));
+      actualizarListaAutosUsadosAdmin();
+      Swal.fire('Gracias', 'Tu información ha sido enviada.', 'success');
+      e.target.reset();
+    }
+
+    // Registro y Login (simple y local)
+    function registrarUsuario() {
+      Swal.fire({
+        title: 'Registrar nuevo usuario',
+        html:
+          `<input id="swal-usuario" class="swal2-input" placeholder="Usuario">` +
+          `<input id="swal-password" type="password" class="swal2-input" placeholder="Contraseña">`,
+        confirmButtonText: 'Registrar',
+        focusConfirm: false,
+        preConfirm: () => {
+          const usuario = document.getElementById('swal-usuario').value.trim();
+          const password = document.getElementById('swal-password').value.trim();
+          if (!usuario || !password) {
+            Swal.showValidationMessage('Por favor ingresa usuario y contraseña');
+            return false;
+          }
+          if (usuarios.find(u => u.usuario === usuario)) {
+            Swal.showValidationMessage('Usuario ya existe');
+            return false;
+          }
+          return { usuario, password };
+        }
+      }).then(result => {
+        if (result.isConfirmed) {
+          usuarios.push(result.value);
+          localStorage.setItem('usuarios', JSON.stringify(usuarios));
+          Swal.fire('Registrado', 'Usuario creado con éxito', 'success');
+        }
+      });
+    }
+
+    function login(e) {
+      e.preventDefault();
+      const usuario = document.getElementById('usuario').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (usuario === ADMIN_CREDENCIALES.usuario && password === ADMIN_CREDENCIALES.password) {
+        mostrarPanelAdmin();
+        mostrarLogin(false);
+        return;
+      }
+
+      const usuarioEncontrado = usuarios.find(u => u.usuario === usuario && u.password === password);
+      if (usuarioEncontrado) {
+        localStorage.setItem('usuarioLogueado', usuario);
+        mostrarUsuariosLogueado();
+        mostrarLogin(false);
+      } else {
+        Swal.fire('Error', 'Usuario o contraseña incorrectos', 'error');
+      }
+    }
+
+    function mostrarLogin(mostrar) {
+      document.getElementById('loginContainer').style.display = mostrar ? 'block' : 'none';
+      document.getElementById('usuarioLogueadoContainer').style.display = mostrar ? 'none' : 'block';
+    }
+
+    function mostrarUsuariosLogueado() {
+      const usuario = localStorage.getItem('usuarioLogueado');
+      if (usuario) {
+        document.getElementById('nombreUsuario').textContent = usuario;
+        mostrarLogin(false);
+      } else {
+        mostrarLogin(true);
+      }
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('usuarioLogueado');
+      mostrarLogin(true);
+    }
+
+    // Juego simple para ganar cupón
+    function jugarJuego(acerto) {
+      if (acerto) {
+        Swal.fire('¡Felicidades!', 'Ganaste un cupón de 15%: CUPON15', 'success');
+        if (!cupones.find(c => c.codigo === 'CUPON15')) {
+          cupones.push({ codigo: 'CUPON15', descuento: 15 });
+          localStorage.setItem('cupones', JSON.stringify(cupones));
+          actualizarListaCuponesAdmin();
+        }
+      } else {
+        Swal.fire('Intenta otra vez', 'Ese no es el botón correcto.', 'info');
+      }
+    }
+
+    // Panel Admin
+    function mostrarPanelAdmin() {
+      document.getElementById('adminPanel').style.display = 'block';
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('usuarioLogueadoContainer').style.display = 'none';
+    }
+
+    function cerrarSesionAdmin() {
+      document.getElementById('adminPanel').style.display = 'none';
+      mostrarLogin(true);
+    }
+
+    // Actualizar listas admin
+    function actualizarListaUsuariosAdmin() {
+      const ul = document.getElementById('listaUsuariosAdmin');
+      ul.innerHTML = '';
+      usuarios.forEach((u, i) => {
+        const li = document.createElement('li');
+        li.textContent = u.usuario;
+        ul.appendChild(li);
+      });
+    }
+
+    function actualizarListaAutosUsadosAdmin() {
+      const ul = document.getElementById('listaAutosUsadosAdmin');
+      ul.innerHTML = '';
+      autosUsados.forEach((auto, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${auto.marca} ${auto.modelo} (${auto.anio}), Estado: ${auto.estado}, Precio esperado: $${parseInt(auto.precio).toLocaleString()}, Contacto: ${auto.contacto}`;
+        ul.appendChild(li);
+      });
+    }
+
+    function actualizarListaCuponesAdmin() {
+      const ul = document.getElementById('listaCuponesAdmin');
+      ul.innerHTML = '';
+      cupones.forEach((c, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${c.codigo} - ${c.descuento}%`;
+        ul.appendChild(li);
+      });
+    }
+
+    function agregarCupon() {
+      const codigo = document.getElementById('nuevoCupon').value.trim().toUpperCase();
+      const descuento = parseInt(document.getElementById('nuevoDescuento').value);
+      if (!codigo || !descuento || descuento <= 0 || descuento > 100) {
+        Swal.fire('Error', 'Introduce un código válido y un descuento entre 1 y 100', 'error');
+        return;
+      }
+      if (cupones.find(c => c.codigo === codigo)) {
+        Swal.fire('Error', 'Ese código de cupón ya existe', 'error');
+        return;
+      }
+      cupones.push({ codigo, descuento });
+      localStorage.setItem('cupones', JSON.stringify(cupones));
+      actualizarListaCuponesAdmin();
+      Swal.fire('Éxito', 'Cupón agregado correctamente', 'success');
+      document.getElementById('nuevoCupon').value = '';
+      document.getElementById('nuevoDescuento').value = '';
+    }
+  </script>
+</body>
+</html>
